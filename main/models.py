@@ -7,11 +7,10 @@ __author__ = 'Gangeshwar'
 
 
 class UsersLogin(db.Model):
-    __tablename__ = 'UsersLogin'
+    __tablename__ = 'users_login'
 
     # _id = db.Column(db.Integer, primary_key=True, unique=True)
     emp_id = db.Column(db.Integer, primary_key=True, unique=True)
-
     username = db.Column(db.String(50), nullable=False, unique=True)
     password_hash = db.Column(db.String(100), nullable=False)
 
@@ -28,13 +27,22 @@ class UsersLogin(db.Model):
             'username': self.username,
         }
 
-    def __init__(self, emp_id, username, password):
-        self.emp_id = emp_id
+    @property
+    def serialize_many2many(self):
+        """
+        Return object's relations in easily serializeable format.
+        NB! Calls many2many's serialize property.
+        """
+        return [item.serialize for item in self.many2many]
+
+    def __init__(self, username, password, emp_id=None):
+        if emp_id is not None:
+            self.emp_id = emp_id
         self.hash_password(password)  # hashing the password
         self.username = username
 
     def __repr__(self):
-        return '<User %r>' % self.email
+        return '<User %r>' % self.emp_id
 
     def get_id(self):
         try:
@@ -44,19 +52,22 @@ class UsersLogin(db.Model):
 
 
 class TaskTable(db.Model):
-    __tablename__ = 'TaskTable'
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    __tablename__ = 'task_table'
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     audit_id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
-    task_assigned_date = db.Column(db.Date, nullable=False)
-    branch = db.Column(db.String(10), nullable=False)
-    engineer_name = db.Column(db.String(30), nullable=False)
+    task_assigned_date = db.Column(db.String(25))
+    branch = db.Column(db.String(10))
+    engineer_name = db.Column(db.String(30))
+    task_location = db.Column(db.String(100))
 
-    def __init__(self, emp_id, audit_id=None, task_assigned_date=None, branch=None, engineer_name=None):
+    def __init__(self, emp_id, audit_id=None, task_assigned_date=None, branch=None, engineer_name=None,
+                 task_location=None):
         self.emp_id = emp_id
         self.audit_id = audit_id
         self.task_assigned_date = task_assigned_date
         self.branch = branch
         self.engineer_name = engineer_name
+        self.task_location = task_location
 
     @property
     def serialize(self):
@@ -66,17 +77,19 @@ class TaskTable(db.Model):
             'task_assigned_date': self.task_assigned_date,
             'branch': self.branch,
             'engineer_name': self.engineer_name,
+            'customer_name': self.customer_name,
+            'customer_address': self.customer_address,
         }
 
 
 class SwitchPhysicalCheckTable(db.Model):
-    __tablename__ = 'SwitchPhysicalCheckTable'
+    __tablename__ = 'switch_physical_check_table'
     _id = db.Column(db.Integer, primary_key=True, unique=True)
-    audit_id = db.Column(db.Integer, db.ForeignKey('TaskTable.audit_id'), nullable=False)
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    audit_id = db.Column(db.Integer, db.ForeignKey('task_table.audit_id'), nullable=False)
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     pre_audit_image = db.Column(db.String(100))
     cx_ip = db.Column(db.String(15))
-    date = db.Column(db.Date)
+    date = db.Column(db.String(25))
     cx_name = db.Column(db.String(30))
     cx_location = db.Column(db.String(100))
     cx_placement = db.Column(db.String(30))
@@ -98,10 +111,10 @@ class SwitchPhysicalCheckTable(db.Model):
 
 
 class BatteryAuditTable(db.Model):
-    __tablename__ = 'BatteryAuditTable'
+    __tablename__ = 'battery_audit_table'
     _id = db.Column(db.Integer, primary_key=True, unique=True)
-    audit_id = db.Column(db.Integer, db.ForeignKey('TaskTable.audit_id'), nullable=False)
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    audit_id = db.Column(db.Integer, db.ForeignKey('task_table.audit_id'), nullable=False)
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     power_sup_loc = db.Column(db.String(20))
     power_sup_sock = db.Column(db.String(20))
     battery_avail = db.Column(db.String(5))
@@ -109,7 +122,7 @@ class BatteryAuditTable(db.Model):
     voltage = db.Column(db.String(5))
     battery_type = db.Column(db.String(5))
     capacity = db.Column(db.String(5))
-    install_date = db.Column(db.Date)
+    install_date = db.Column(db.String(25))
     serial = db.Column(db.Integer)
     check_point_t1 = db.Column(db.Float)  # First 15 Min Discharging Test
     check_point_t2 = db.Column(db.Float)  # Second 15 Min Discharging Test
@@ -118,52 +131,52 @@ class BatteryAuditTable(db.Model):
 
 
 class NewBatteryTable(db.Model):
-    __tablename__ = 'NewBatteryTable'
+    __tablename__ = 'new_battery_table'
     _id = db.Column(db.Integer, primary_key=True, unique=True)
-    audit_id = db.Column(db.Integer, db.ForeignKey('TaskTable.audit_id'), nullable=False)
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    audit_id = db.Column(db.Integer, db.ForeignKey('task_table.audit_id'), nullable=False)
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     new_battery_installed = db.Column(db.String(5))
     new_battery_type = db.Column(db.String(10))
-    battery_install_date = db.Column(db.Date)
+    battery_install_date = db.Column(db.String(25))
     battery_capacity = db.Column(db.Float)
     baterry_serial = db.Column(db.String(10))
     earthing_status = db.Column(db.String(5))
 
 
 class CableTable(db.Model):
-    __tablename__ = 'CableTable'
+    __tablename__ = 'cable_table'
     _id = db.Column(db.Integer, primary_key=True, unique=True)
-    audit_id = db.Column(db.Integer, db.ForeignKey('TaskTable.audit_id'), nullable=False)
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    audit_id = db.Column(db.Integer, db.ForeignKey('task_table.audit_id'), nullable=False)
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     is_sagging = db.Column(db.String(5))
     routing_status = db.Column(db.String(10))
     is_passing_electrical = db.Column(db.String(5))
 
 
 class CustomerDetails(db.Model):
-    __tablename__ = 'CustomerDetails'
+    __tablename__ = 'customer_details'
     _id = db.Column(db.Integer, primary_key=True, unique=True)
-    audit_id = db.Column(db.Integer, db.ForeignKey('TaskTable.audit_id'), nullable=False)
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    audit_id = db.Column(db.Integer, db.ForeignKey('task_table.audit_id'), nullable=False)
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     customer_name = db.Column(db.String(10))
     customer_port = db.Column(db.Integer)
 
 
 class OtherDetails(db.Model):
-    __tablename__ = 'OtherDetails'
+    __tablename__ = 'other_details'
     _id = db.Column(db.Integer, primary_key=True, unique=True)
-    audit_id = db.Column(db.Integer, db.ForeignKey('TaskTable.audit_id'), nullable=False)
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    audit_id = db.Column(db.Integer, db.ForeignKey('task_table.audit_id'), nullable=False)
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     latitude = db.Column(db.Float)
     longitude = db.Column(db.Float)
     post_audit_image = db.Column(db.String(100))
 
 
 class PendingDetails(db.Model):
-    __tablename__ = 'PendingDetails'
+    __tablename__ = 'pending_details'
     _id = db.Column(db.Integer, primary_key=True, unique=True)
-    audit_id = db.Column(db.Integer, db.ForeignKey('TaskTable.audit_id'), nullable=False)
-    emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
+    audit_id = db.Column(db.Integer, db.ForeignKey('task_table.audit_id'), nullable=False)
+    emp_id = db.Column(db.Integer, db.ForeignKey('users_login.emp_id'), nullable=False)
     connector = db.Column(db.String(5))
     switch = db.Column(db.String(5))
     jack = db.Column(db.String(5))
