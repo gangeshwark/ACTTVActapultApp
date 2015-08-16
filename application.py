@@ -1,12 +1,6 @@
-from flask import Flask
+from main import application
 
-application = Flask(__name__)
-
-
-@application.route('/')
-def hello_world():
-    return 'Hello World!'
-
+__author__ = 'Gangeshwar'
 
 if __name__ == '__main__':
-    application.run()
+    application.run(debug=True)
