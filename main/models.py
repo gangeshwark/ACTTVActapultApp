@@ -47,7 +47,7 @@ class TaskTable(db.Model):
     __tablename__ = 'TaskTable'
     emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
     audit_id = db.Column(db.Integer, primary_key=True, nullable=False, unique=True)
-    task_assigned_date = db.Column(db.DateTime, nullable=False)
+    task_assigned_date = db.Column(db.Date, nullable=False)
     branch = db.Column(db.String(10), nullable=False)
     engineer_name = db.Column(db.String(30), nullable=False)
 
@@ -76,7 +76,7 @@ class SwitchPhysicalCheckTable(db.Model):
     emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
     pre_audit_image = db.Column(db.String(100))
     cx_ip = db.Column(db.String(15))
-    date = db.Column(db.DateTime)
+    date = db.Column(db.Date)
     cx_name = db.Column(db.String(30))
     cx_location = db.Column(db.String(100))
     cx_placement = db.Column(db.String(30))
@@ -109,7 +109,7 @@ class BatteryAuditTable(db.Model):
     voltage = db.Column(db.String(5))
     battery_type = db.Column(db.String(5))
     capacity = db.Column(db.String(5))
-    install_date = db.Column(db.DateTime)
+    install_date = db.Column(db.Date)
     serial = db.Column(db.Integer)
     check_point_t1 = db.Column(db.Float)  # First 15 Min Discharging Test
     check_point_t2 = db.Column(db.Float)  # Second 15 Min Discharging Test
@@ -124,7 +124,7 @@ class NewBatteryTable(db.Model):
     emp_id = db.Column(db.Integer, db.ForeignKey('UsersLogin.emp_id'), nullable=False)
     new_battery_installed = db.Column(db.String(5))
     new_battery_type = db.Column(db.String(10))
-    battery_install_date = db.Column(db.DateTime)
+    battery_install_date = db.Column(db.Date)
     battery_capacity = db.Column(db.Float)
     baterry_serial = db.Column(db.String(10))
     earthing_status = db.Column(db.String(5))
