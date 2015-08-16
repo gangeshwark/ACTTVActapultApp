@@ -53,12 +53,13 @@ def index():
     return response
 
 
-@application.route('/api/v1/logout')
+@application.route('/api/v1/logout', methods=['POST'])
 def logout():
     try:
-        del session['emp_id']
+        session.pop('emp_id')
     except:
         return make_response(jsonify(fail="User logout failed"), 400)
+
     return make_response(jsonify(success="User logged out"), 200)
 
 
@@ -125,7 +126,7 @@ def show_list():
     return make_response(jsonify(tasks=data))
 
 
-@application.route('/checkuser', methods=['GET'])
+@application.route('/api/v1/checkuser', methods=['GET'])
 def check():
     return jsonify(session=session['emp_id'])
 
