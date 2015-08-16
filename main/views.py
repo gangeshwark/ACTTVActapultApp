@@ -57,8 +57,8 @@ def index():
 def logout():
     try:
         session.pop('emp_id')
-    except:
-        return make_response(jsonify(fail="User logout failed"), 400)
+    except Exception as e:
+        return make_response(jsonify(fail="User logout failed", reason=e), 400)
 
     return make_response(jsonify(success="User logged out"), 200)
 
