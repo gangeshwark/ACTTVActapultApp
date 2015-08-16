@@ -51,6 +51,13 @@ class TaskTable(db.Model):
     branch = db.Column(db.String(10), nullable=False)
     engineer_name = db.Column(db.String(30), nullable=False)
 
+    def __init__(self, emp_id, audit_id=None, task_assigned_date=None, branch=None, engineer_name=None):
+        self.emp_id = emp_id
+        self.audit_id = audit_id
+        self.task_assigned_date = task_assigned_date
+        self.branch = branch
+        self.engineer_name = engineer_name
+
     @property
     def serialize(self):
         return {
