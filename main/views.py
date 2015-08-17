@@ -123,6 +123,12 @@ def show_list():
     return make_response(jsonify(tasks=data))
 
 
+@application.route('/api/v1/post_battery_audit', methods=['POST'])
+def post_battery_audit():
+    response = make_response()
+    return response
+
+
 @application.route('/api/v1/checkuser', methods=['GET'])
 def check():
     return jsonify(session=session['emp_id'])
