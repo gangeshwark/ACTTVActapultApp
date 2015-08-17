@@ -16,3 +16,5 @@ SQLALCHEMY_DATABASE_URI = 'mysql://root:root@localhost:3306/actapult' if os.envi
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 
 SERVER_NAME = 'localhost:5000' if os.environ.get('SERVER_NAME') is None else os.environ.get('SERVER_NAME')
+
+# mysql://actapult:actapult@aa1how0gdmr52oh.c7aitaarf7z4.us-east-1.rds.amazonaws.com/actapult

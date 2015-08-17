@@ -1,5 +1,4 @@
 import json
-
 from flask import request, session, make_response, jsonify
 
 from main import application, db

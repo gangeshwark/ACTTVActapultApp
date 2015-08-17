@@ -1,7 +1,6 @@
-from datetime import datetime
-from flask.ext.sqlalchemy import SQLAlchemy
-from main import db
 from passlib.apps import custom_app_context as pwd_context
+
+from main import db
 
 __author__ = 'Gangeshwar'
 
