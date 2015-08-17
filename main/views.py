@@ -1,5 +1,4 @@
 import json
-from django.core.signals import request_started
 from flask import request, session, make_response, jsonify
 from flask.ext.login import login_user
 
